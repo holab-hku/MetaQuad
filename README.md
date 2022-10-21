@@ -19,7 +19,7 @@ A recommended pipeline for MetaQuad:
 MetaQuad is available from the GitHub repository for latest version by the following command line: 
 
 ```
-pip install -U git+https://github.com/SX-16/MetaQuad
+pip install -U git+https://github.com/holab-hku/MetaQuad.git
 ```
 
 ## Quick start
