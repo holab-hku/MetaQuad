@@ -10,7 +10,7 @@ import seaborn as sns
 from bbmix.models import MixtureBinomialSparseBatch
 
 
-
+###old model, do not use now
 
 
 class Metaquad():
