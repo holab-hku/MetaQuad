@@ -7,7 +7,10 @@ from optparse import OptionParser, OptionGroup
 from metaquad.version import __version__
 from vireoSNP.utils.io_utils import read_cellSNP
 from metaquad.metaquad import Metaquad
-
+from sklearn.cluster import OPTICS
+import numpy as np
+import pandas as pd
+from numpy import array
 START_TIME = time.time()
 
 
@@ -74,20 +77,47 @@ def main():
     export_heatmap = options.export_heatmap
 
     ## Main functions
+    np.seterr(divide='ignore', invalid='ignore')
+    AD = input_data['AD']
+    DP = input_data['DP']
+    variant_names = input_data['variants']
+    AP = AD / DP
 
-    mdphd = Metaquad(
-                AD=input_data['AD'],
-                DP=input_data['DP'],
-                variant_names=input_data['variants']
-            )
-    df = mdphd.fit_deltaBIC(
-                out_dir=out_dir,
-                minDP=minDP,
-                nproc=nproc,
-                batch_size=batch_size,
-            )
-    best_ad, best_dp = mdphd.selectInformativeVariants(min_samples=minSample, out_dir=out_dir,
-                                                       cutoff=cutoff, export_heatmap=export_heatmap)
+    ##remove missing value
+    AP_df = pd.DataFrame(AP)
+    index = AP_df.loc[AP_df.isnull().sum(1) < (len(AP_df.columns)-minSample)].index
+    AD = AD[index, :]
+    DP = DP[index, :]
+    AP = AP[index, :]
+    variant_names=array(variant_names)[index]
+
+
+
+
+    num_of_clusters = []
+    mean_AD = []
+    mean_DP = []
+    number_DP= []
+    for i in range(len(variant_names)):
+        X = AP[i,]
+        X = np.squeeze(np.asarray(X))
+        number_DP.append(len(X[~np.isnan(X)]))
+        X = X[~np.isnan(X)]
+        #X[np.isnan(X)] = 0
+        X = X.reshape(-1, 1)
+        value = len(np.unique(np.delete(OPTICS(min_samples=minSample).fit(X).labels_, np.where(OPTICS(min_samples=minSample).fit(X).labels_ == -1))))
+        num_of_clusters.append(value)
+        mean_AD.append(np.mean(AD[i,]))
+        mean_DP.append(np.mean(DP[i,]))
+
+
+    # value = value if np.mean(DP[i,]) > 1 and np.mean(AD[i,]) > 0.2 else 0
+
+
+
+    df = pd.DataFrame({"variant_names": variant_names, "num_of_clusters": num_of_clusters,"mean_DP": mean_DP, "mean_AD": mean_AD,"number_DP": number_DP})
+
+    df.to_csv(out_dir + '/shared_mutations.csv', index=False)
 
     run_time = time.time() - START_TIME
     print("[MetaQuad] Time usage: %d min %.1f sec" % (int(run_time / 60),
