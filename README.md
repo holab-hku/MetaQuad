@@ -1,15 +1,15 @@
 # MetaQuad
 MetaQuad: Shared Informative Variants Discovery in Metagenomic Samples
 
-MetaQuad is a tool that can detect **shared informative variants** in a population of shotgun metagenomic data. It uses a binomial mixture model to assess the informative variants among background noise. False positive mutations can be significanly reduced via MetaQuad. MetaQuad is incorporated from [MQuad](https://github.com/single-cell-genetics/MQuad), and extended to support shotgun metagenomic data.
+MetaQuad is a tool designed to detect **shared informative variants** in a population of shotgun metagenomic data. It uses a density clustering model to assess the informative variants among background noise. MetaQuad is an extension of [MQuad](https://github.com/single-cell-genetics/MQuad), specifically tailored to support shotgun metagenomic data.
 
-A recommended pipeline for MetaQuad:
+We recommend the following pipeline for using MetaQuad:
 
-  1. filter and align reads from shotgun metaganomic sequencing to a reference database with some alignment tools, including bwa and bowtie2. Recommended suffix for the final files are ".filtered.sorted.bam". <br/>
+  1. Filter and align reads from shotgun metagenomic sequencing to a reference database using alignment tools such as bwa or bowtie2. The recommended suffix for the final files is ".filtered.sorted.bam". <br/>
 
-  2. pileup variant with [cellsnp-lite](https://github.com/single-cell-genetics/cellsnp-lite). <br/> Recommended parameter: minMAF = 0.02 and minCOUNT = 100. A higher value is recommended as the computation time of subsequent steps can be significantly reduced. 
+  2. Pile up variants using [cellsnp-lite](https://github.com/single-cell-genetics/cellsnp-lite). <br/> with the following recommended parameters: minMAF = 0.02 and minCOUNT = 100. A higher value is recommended to reduce computation time for subsequent steps. 
 
-  3. detect informative mutations with MetaQuad. Recommended parameter: minSample = 5% of total sample size and num_of_clusters >= 2. 
+  3. Detect informative mutations using MetaQuad, with the following recommended parameters: minSample = 5% of the total sample size and num_of_clusters >= 2. 
 
 
 
@@ -56,7 +56,7 @@ Nucleotide diversity is a measure of the degree of polymorphism within a populat
 ```
 Rscript nucleotide_diversity_code.R cellSNP.cells.vcf.gz BIC_params.csv genome_length.csv
 ```
-The expected output is a csv file, "Nucleotide_diversity.csv". cellSNP.cells_ARG.vcf.gz is one of the output file from cellsnp-lite. genome_length.csv is used to normalised the raw data, and it can also be covbases for each gene and sample, according to the actual situation. Genome lengths and covbases can be calculated with samtools and R script Genome_coverage.R: 
+The expected output from the nucleotide_diversity_code.R script is a CSV file called "Nucleotide_diversity.csv". This script requires two input files: cellSNP.cells_ARG.vcf.gz, which is one of the output files from cellsnp-lite, and genome_length.csv, which is used to normalize the raw data. The values in genome_length.csv can be either genome lengths or covbases for each gene and sample, depending on the specific situation. Genome lengths and covbases can be calculated with samtools and R script Genome_coverage.R: 
 
 ```
 for i in  $(cat idlist)
