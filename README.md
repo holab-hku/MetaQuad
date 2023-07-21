@@ -9,7 +9,7 @@ A recommended pipeline for MetaQuad:
 
   2. pileup variant with [cellsnp-lite](https://github.com/single-cell-genetics/cellsnp-lite). <br/> Recommended parameter: minMAF = 0.02 and minCOUNT = 100. A higher value is recommended as the computation time of subsequent steps can be significantly reduced. 
 
-  3. detect informative mutations with MetaQuad. Recommended parameter: minSample = 5% of total sample size and delta BIC cutoff (-t) = 10, as it is a very strong evidence. 
+  3. detect informative mutations with MetaQuad. Recommended parameter: minSample = 5% of total sample size and num_of_clusters >= 2. 
 
 
 
@@ -29,7 +29,7 @@ Once installed, the version and input parameters can be checked with metaquad -h
 MetaQuad takes the output folder of cellSNP-lite: 
 
 ```
-metaquad  -i cellSNP -o metaquad_test -p 20 -t 10 --minDP=3 --batchSize 512
+metaquad  -i cellSNP -o Metaquad --minSample=5
 ```
 
 ## Manual
@@ -38,20 +38,20 @@ metaquad  -i cellSNP -o metaquad_test -p 20 -t 10 --minDP=3 --batchSize 512
 
 **Column description for BIC_params.csv:**
 
-- deltaBIC: score of informativeness, higher is better. In MetaQuad, a variant can be called as an informative mutation only if the delta BIC is larger than the cutoff value. 
+- variant_names: Name of variants.
 
-- params1, params2, model1BIC, model2BIC: fitted parameteres for the binomial models. 
+- num_of_clusters: Predicted number of clusters for a variant. 
   
-- num_samples_minor_cpt: no. of samples in the minor component, can be used to filtering variants that only happens in few samples. It can be a tradeoff between true positive and false positive. 
+- mean_DP, mean_AD: Average AD and DP (respectively) across all samples.
 
-- PASS_cutoff: T/F, whether a mutation passed the delta BIC cutoff.
+- number_DP: Number of non-zero DP samples.
 
-- PASS_MINSAMPLES: T/F, whether a mutation passed the minSample.
+
 
 
 ## Calculation of nucleotide diversity
 
-Nucleotide diversity can be used to measure the degree of polymorphism within a population. Nucleotide diversity can be calculated via nucleotide_diversity_code.R, with R package "vcfR": 
+Nucleotide diversity is a measure of the degree of polymorphism within a population. To calculate nucleotide diversity, you can use the nucleotide_diversity_code.R script, which requires the R package "vcfR". The script should be run as follows: 
 
 ```
 Rscript nucleotide_diversity_code.R cellSNP.cells.vcf.gz BIC_params.csv genome_length.csv
