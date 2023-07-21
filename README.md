@@ -1,5 +1,5 @@
 # MetaQuad
-MetaQuad: Shared Informative Variants Dis-covery in Metagenomic Samples
+MetaQuad: Shared Informative Variants Discovery in Metagenomic Samples
 
 MetaQuad is a tool that can detect **shared informative variants** in a population of shotgun metagenomic data. It uses a binomial mixture model to assess the informative variants among background noise. False positive mutations can be significanly reduced via MetaQuad. MetaQuad is incorporated from [MQuad](https://github.com/single-cell-genetics/MQuad), and extended to support shotgun metagenomic data.
 
