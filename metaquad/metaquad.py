@@ -11,6 +11,8 @@ from bbmix.models import MixtureBinomialSparseBatch
 
 
 
+
+
 class Metaquad():
     def __init__(self, AD, DP, variant_names=None, dataset_name=None):
 
@@ -206,7 +208,7 @@ class Metaquad():
 
 
 def sparseMixBinFit(valid_ad, valid_dp, valid_row_sizes, fix_seed=None):
-    # idelta BIC
+    # delta BIC
     if fix_seed is not None:
         np.random.seed(fix_seed)
 
@@ -216,7 +218,11 @@ def sparseMixBinFit(valid_ad, valid_dp, valid_row_sizes, fix_seed=None):
     model2 = MixtureBinomialSparseBatch(n_components=2, tor=1e-20)
     params2 = model2.fit((valid_ad, valid_dp), valid_row_sizes, max_iters=500, early_stop=True)
 
+    model3 = MixtureBinomialSparseBatch(n_components=5, tor=1e-20)
+    params3 = model3.fit((valid_ad, valid_dp), valid_row_sizes, max_iters=500, early_stop=True)
+
     delta_BIC = model1.model_scores["BIC"] - model2.model_scores["BIC"]
+    delta_BIC2= model1.model_scores["BIC"] - model3.model_scores["BIC"]
 
     p = params2[:, [0, 1]]
     pi = params2[:, [2, 3]]
@@ -229,6 +235,7 @@ def sparseMixBinFit(valid_ad, valid_dp, valid_row_sizes, fix_seed=None):
 
     results = {
         "num_samples": valid_row_sizes,
+        'deltaBIC2': delta_BIC2,
         'deltaBIC': delta_BIC,
         'params1': params1.tolist(),
         'params2': params2.tolist(),
